@@ -11,7 +11,8 @@ export function GlobalText({ children, style }: GlobalTextProps) {
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: "CormorantGaramond_400Regular",
+    fontFamily: "Literata_400Regular",
     color: "#F5F0E6",
+    fontVariant: ["lining-nums"],
   },
 });

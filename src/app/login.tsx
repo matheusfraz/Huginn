@@ -1,9 +1,29 @@
 import { Screen } from "@/components/Screen";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Pressable,
+} from "react-native";
 import { GlobalText } from "@/components/GlobalText";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 
 export default function Login() {
+  const authorizedLogin: Record<string, string> = {
+    email: "vitorvidigal@gmail.com",
+    password: "vidigal123",
+  };
+
+  const [login, setLogin] = useState<Record<string, string>>({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState<Boolean>(false);
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -14,7 +34,7 @@ export default function Login() {
           />
           <GlobalText style={styles.logoText}>Huginn</GlobalText>
         </View>
-        <View style={styles.linha} />
+        <View style={styles.line} />
         <GlobalText>
           <Text style={{ fontSize: 23 }}>Apenas o conhecimento liberta.</Text>
         </GlobalText>
@@ -24,7 +44,13 @@ export default function Login() {
             <View style={styles.symbol}>
               <Ionicons name="mail-outline" size={28} color="#103330" />
             </View>
-            <TextInput style={styles.input} placeholder="email"></TextInput>
+            <TextInput
+              style={styles.input}
+              keyboardType="email-address"
+              placeholder="email"
+              value={login.email}
+              onChangeText={(email) => setLogin({ ...login, email: email })}
+            ></TextInput>
           </View>
           <View style={styles.inputContainer}>
             <View style={styles.symbol}>
@@ -34,9 +60,31 @@ export default function Login() {
               style={styles.input}
               secureTextEntry
               placeholder="senha"
+              value={login.password}
+              onChangeText={(password) =>
+                setLogin({ ...login, password: password })
+              }
             ></TextInput>
           </View>
         </View>
+        <Pressable style={styles.button}>
+          <GlobalText
+            style={{
+              fontFamily: "Literata_700Bold",
+              fontSize: 25,
+              color: "#103330",
+            }}
+          >
+            Entrar
+          </GlobalText>
+        </Pressable>
+        {error && (
+          <GlobalText>
+            <Text style={{ fontSize: 17, color: "red" }}>
+              email ou senha incorreto
+            </Text>
+          </GlobalText>
+        )}
       </View>
     </Screen>
   );
@@ -63,7 +111,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#F5F0E6",
     resizeMode: "contain",
-    shadowColor: "#000",
+    shadowColor: "#ffffff",
     shadowOpacity: 0.35,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -80,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 8,
     width: "85%",
-    gap: 25,
+    gap: 30,
   },
 
   inputContainer: {
@@ -88,7 +136,6 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#0a201f",
     borderRadius: 12,
-    fontFamily: "CormorantGaramond_400Regular",
     borderWidth: 2,
     borderColor: "#F5F0E6",
     flexDirection: "row",
@@ -107,17 +154,28 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: "100%",
-    justifyContent: "center",
     fontSize: 20,
     marginLeft: 10,
     marginRight: 10,
-    fontFamily: "CormorantGaramond_400Regular",
+    fontFamily: "Literata_400Regular",
     color: "#F5F0E6",
+    fontVariant: ["lining-nums"],
   },
 
-  linha: {
+  line: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: "#F5F0E6",
     width: "40%",
+  },
+
+  button: {
+    height: "6%",
+    width: "72%",
+    backgroundColor: "#F5F0E6",
+    marginTop: 15,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#103330",
   },
 });
