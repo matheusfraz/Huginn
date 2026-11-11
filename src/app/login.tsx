@@ -10,22 +10,25 @@ import {
 import { GlobalText } from "@/components/GlobalText";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { router } from "expo-router";
+
+const authorizedLogin: Record<string, string> = {
+  email: "123",
+  password: "123",
+};
 
 export default function Login() {
-  const authorizedLogin: Record<string, string> = {
-    email: "vitorvidigal@gmail.com",
-    password: "vidigal123",
-  };
-
   const [login, setLogin] = useState<Record<string, string>>({
     email: "",
     password: "",
   });
 
-  const [error, setError] = useState<Boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const [error, setError] = useState<boolean>(false);
 
   return (
-    <Screen>
+    <Screen scroll={true}>
       <View style={styles.container}>
         <View style={styles.logo}>
           <Image
@@ -48,17 +51,25 @@ export default function Login() {
               style={styles.input}
               keyboardType="email-address"
               placeholder="email"
+              autoCapitalize="none"
               value={login.email}
               onChangeText={(email) => setLogin({ ...login, email: email })}
             ></TextInput>
           </View>
           <View style={styles.inputContainer}>
-            <View style={styles.symbol}>
-              <Ionicons name="eye-off-outline" size={28} color="#103330" />
-            </View>
+            <Pressable
+              style={styles.symbol}
+              onPress={() => setIsVisible(!isVisible)}
+            >
+              <Ionicons
+                name={isVisible ? "eye-outline" : "eye-off-outline"}
+                size={28}
+                color="#103330"
+              />
+            </Pressable>
             <TextInput
               style={styles.input}
-              secureTextEntry
+              secureTextEntry={isVisible ? false : true}
               placeholder="senha"
               value={login.password}
               onChangeText={(password) =>
@@ -66,25 +77,47 @@ export default function Login() {
               }
             ></TextInput>
           </View>
-        </View>
-        <Pressable style={styles.button}>
-          <GlobalText
-            style={{
-              fontFamily: "Literata_700Bold",
-              fontSize: 25,
-              color: "#103330",
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              if (
+                login.email === authorizedLogin.email &&
+                login.password === authorizedLogin.password
+              ) {
+                setError(false);
+                router.replace("/catalogo");
+              } else {
+                setError(true);
+              }
             }}
           >
-            Entrar
-          </GlobalText>
-        </Pressable>
-        {error && (
-          <GlobalText>
-            <Text style={{ fontSize: 17, color: "red" }}>
+            <GlobalText
+              style={{
+                fontFamily: "Literata_700Bold",
+                fontSize: 25,
+                color: "#103330",
+              }}
+            >
+              Entrar
+            </GlobalText>
+          </Pressable>
+          <View style={styles.line} />
+          {error && (
+            <GlobalText style={styles.errorMensage}>
               email ou senha incorreto
-            </Text>
-          </GlobalText>
-        )}
+            </GlobalText>
+          )}
+        </View>
+        <View></View>
+        <Text
+          style={{
+            marginBottom: 50,
+            fontFamily: "Literata_400Regular",
+            color: "#F5F0E6",
+          }}
+        >
+          matheusfraz | bentocsf
+        </Text>
       </View>
     </Screen>
   );
@@ -129,6 +162,7 @@ const styles = StyleSheet.create({
     padding: 8,
     width: "85%",
     gap: 30,
+    height: 370,
   },
 
   inputContainer: {
@@ -169,7 +203,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    height: "6%",
+    height: "12%",
     width: "72%",
     backgroundColor: "#F5F0E6",
     marginTop: 15,
@@ -177,5 +211,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     color: "#103330",
+  },
+
+  errorMensage: {
+    padding: 12,
+    backgroundColor: "#cc44445d",
+    borderWidth: 3,
+    borderRadius: 12,
+    borderColor: "#bb351e",
+    fontSize: 17,
+    color: "red",
   },
 });

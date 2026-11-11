@@ -1,14 +1,17 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, StyleProp, ViewStyle } from "react-native";
+import { StyleSheet, StyleProp, ViewStyle, ScrollView } from "react-native";
 
 interface ScreenProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  scroll: boolean;
 }
 
-export function Screen({ children, style }: ScreenProps) {
+export function Screen({ children, style, scroll }: ScreenProps) {
   return (
-    <SafeAreaView style={[styles.container, style]}>{children}</SafeAreaView>
+    <SafeAreaView style={[styles.container, style]}>
+      {scroll && <ScrollView>{children}</ScrollView>}
+    </SafeAreaView>
   );
 }
 
