@@ -27,14 +27,25 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerStyle: { backgroundColor: "#103330" },
-        headerTintColor: "#F5F0E6",
-        tabBarStyle: { backgroundColor: "#041b19", borderTopColor: "#F5F0E6" },
+        tabBarStyle: {
+          paddingTop: 10,
+          backgroundColor: "#041b19",
+          borderTopWidth: 0,
+          elevation: 0,
+        },
         tabBarActiveTintColor: "#F5F0E6",
         tabBarInactiveTintColor: "#7A8F8A",
+        headerShown: false,
       }}
     >
-      <Tabs.Screen name="catalogo" options={{ title: "Catálogo" }} />
-      <Tabs.Screen name="perfil" options={{ title: "Perfil" }} />
+      <Tabs.Screen
+        name="catalogo"
+        options={{ title: "Catálogo", headerShown: false }}
+      />
+      <Tabs.Screen
+        name="perfil"
+        options={{ title: "Perfil", headerShown: false }}
+      />
     </Tabs>
   );
 }

@@ -44,7 +44,7 @@ export default function Login() {
 
         <View style={styles.inputArea}>
           <View style={styles.inputContainer}>
-            <View style={styles.symbol}>
+            <View style={styles.iconArea}>
               <Ionicons name="mail-outline" size={28} color="#103330" />
             </View>
             <TextInput
@@ -58,7 +58,7 @@ export default function Login() {
           </View>
           <View style={styles.inputContainer}>
             <Pressable
-              style={styles.symbol}
+              style={styles.iconArea}
               onPress={() => setIsVisible(!isVisible)}
             >
               <Ionicons
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
-  symbol: {
+  iconArea: {
     width: "14%",
     height: "100%",
     backgroundColor: "#F5F0E6",
