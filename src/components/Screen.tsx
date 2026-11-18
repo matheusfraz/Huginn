@@ -10,10 +10,12 @@ interface ScreenProps {
 export function Screen({ children, style, scroll }: ScreenProps) {
   return (
     <SafeAreaView style={[styles.container, style]}>
-      {scroll && (
+      {scroll ? (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           {children}
         </ScrollView>
+      ) : (
+        children
       )}
     </SafeAreaView>
   );

@@ -2,7 +2,7 @@ import { Language } from "./Language";
 
 export type Filter = {
   id: number;
-  name: String;
+  name: string;
   language?: Language;
   isActive: boolean;
 };

@@ -1,23 +1,27 @@
 import { View, StyleSheet } from "react-native";
 import { GlobalText } from "./GlobalText";
-import { Filter } from "@/app/types/filter";
+import { Filter } from "@/types/Filter";
 
-export function FilterTemplate({ name, isActive }: Filter) {
+interface FilterTemplateProps {
+  filter: Filter;
+}
+
+export function FilterTemplate({ filter }: FilterTemplateProps) {
   return (
     <View
       style={[
         styles.filterContainer,
-        isActive && { backgroundColor: "#F5F0E6" },
+        filter.isActive && { backgroundColor: "#F5F0E6" },
       ]}
     >
       <GlobalText
         style={{
           fontSize: 22,
-          color: isActive ? "#0a201f" : "#F5F0E6",
+          color: filter.isActive ? "#0a201f" : "#F5F0E6",
           fontFamily: "Literata_700Bold",
         }}
       >
-        {name}
+        {filter.name}
       </GlobalText>
     </View>
   );

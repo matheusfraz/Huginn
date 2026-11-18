@@ -1,6 +1,12 @@
-import { StyleSheet, StyleProp, TextStyle, Text } from "react-native";
+import {
+  StyleSheet,
+  StyleProp,
+  TextStyle,
+  Text,
+  TextProps,
+} from "react-native";
 
-interface GlobalTextProps {
+interface GlobalTextProps extends TextProps {
   children: React.ReactNode;
   style?: StyleProp<TextStyle>;
 }
