@@ -10,6 +10,7 @@ import {
   Literata_400Regular,
   Literata_700Bold,
 } from "@expo-google-fonts/literata";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -24,9 +25,12 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <Stack>
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-    </Stack>
+    <FavoritesProvider>
+      <Stack>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen name="detalhes" options={{ headerShown: false }} />
+      </Stack>
+    </FavoritesProvider>
   );
 }

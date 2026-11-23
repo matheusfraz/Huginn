@@ -1,7 +1,9 @@
 import type { Book } from "@/types/Book";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, Pressable } from "react-native";
 import { GlobalText } from "./GlobalText";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 interface BookCardProps {
   book: Book;
@@ -9,34 +11,72 @@ interface BookCardProps {
 
 export function BookCard({ book }: BookCardProps) {
   const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(book.key);
 
   return (
     <View style={styles.bookContainer}>
-      <View style={styles.coverShadow}>
-        {book.cover_i ? (
-          <Image source={{ uri: coverUrl }} style={styles.cover} />
-        ) : (
-          <View style={[styles.cover, styles.noCover]}>
-            <Ionicons name="book-outline" size={28} color="#93A69F" />
-          </View>
-        )}
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Ver detalhes de ${book.title}`}
+        onPress={() =>
+          router.push({
+            pathname: "/detalhes",
+            params: {
+              key: book.key,
+              title: book.title,
+              author: book.author_name?.[0] ?? "Autor desconhecido",
+              coverId: book.cover_i?.toString() ?? "",
+              year: book.first_publish_year?.toString() ?? "",
+            },
+          })
+        }
+        style={styles.bookContent}
+      >
+        <View style={styles.coverShadow}>
+          {book.cover_i ? (
+            <Image source={{ uri: coverUrl }} style={styles.cover} />
+          ) : (
+            <View style={[styles.cover, styles.noCover]}>
+              <Ionicons name="book-outline" size={28} color="#93A69F" />
+            </View>
+          )}
+        </View>
 
-      <View style={styles.info}>
-        <GlobalText style={styles.title} numberOfLines={2}>
-          {book.title}
-        </GlobalText>
-        <GlobalText style={styles.author} numberOfLines={1}>
-          {book.author_name?.[0] ?? "Autor desconhecido"}
-        </GlobalText>
-        {book.first_publish_year && (
-          <View style={styles.yearBadge}>
-            <GlobalText style={styles.yearText}>
-              {book.first_publish_year}
-            </GlobalText>
-          </View>
-        )}
-      </View>
+        <View style={styles.info}>
+          <GlobalText style={styles.title} numberOfLines={2}>
+            {book.title}
+          </GlobalText>
+          <GlobalText style={styles.author} numberOfLines={1}>
+            {book.author_name?.[0] ?? "Autor desconhecido"}
+          </GlobalText>
+          {book.first_publish_year && (
+            <View style={styles.yearBadge}>
+              <GlobalText style={styles.yearText}>
+                {book.first_publish_year}
+              </GlobalText>
+            </View>
+          )}
+        </View>
+      </Pressable>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={
+          favorite
+            ? `Remover ${book.title} dos favoritos`
+            : `Adicionar ${book.title} aos favoritos`
+        }
+        accessibilityState={{ selected: favorite }}
+        onPress={() => toggleFavorite(book)}
+        style={({ pressed }) => [styles.favoriteButton, pressed && styles.favoritePressed]}
+      >
+        <Ionicons
+          name={favorite ? "heart" : "heart-outline"}
+          size={23}
+          color={favorite ? "#E58B80" : "#D9B8A4"}
+        />
+      </Pressable>
     </View>
   );
 }
@@ -51,6 +91,30 @@ const styles = StyleSheet.create({
     borderColor: "#1f4642",
     padding: 12,
     gap: 14,
+  },
+
+  bookContent: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+
+  favoriteButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#17332F",
+    borderWidth: 1,
+    borderColor: "#31564F",
+  },
+
+  favoritePressed: {
+    backgroundColor: "#294B45",
+    transform: [{ scale: 0.92 }],
   },
 
   coverShadow: {

@@ -20,7 +20,7 @@ export default function DrawerLayout() {
           title: "Início",
           drawerLabel: "Início",
           drawerIcon: ({ color, size }) => (
-            <DrawerIcon name="home-outline" color={'color'} size={size} />
+            <DrawerIcon name="home-outline" color={'white'} size={size} />
           ),
         }}
       />
@@ -30,7 +30,7 @@ export default function DrawerLayout() {
           title: "Sobre",
           drawerLabel: "Sobre",
           drawerIcon: ({ color, size }) => (
-            <DrawerIcon name="information-circle-outline" color={'color'} size={size} />
+            <DrawerIcon name="information-circle-outline" color={'white'} size={size} />
           ),
         }}
       />
