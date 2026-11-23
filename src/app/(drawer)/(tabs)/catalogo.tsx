@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Book, SearchResponse } from "@/types/Book";
 import { BookCard } from "@/components/BookCard";
+import { DrawerToggleButton } from "expo-router/drawer";
 
 export default function Catalogo() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -50,6 +51,9 @@ export default function Catalogo() {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
+              <View style={styles.menuButton}>
+                <DrawerToggleButton tintColor="#F5F0E6" />
+              </View>
               <View style={styles.titleContainer}>
                 <View style={styles.logo}>
                   <Image
@@ -124,7 +128,15 @@ const styles = StyleSheet.create({
     height: 110,
     flexDirection: "row",
     gap: 5,
-    marginTop: 10,
+    alignItems: "center",
+  },
+
+  menuButton: {
+    height: 44,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    marginTop: -12,
+    marginLeft: -12,
   },
 
   titleArea: {
