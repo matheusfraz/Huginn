@@ -7,30 +7,18 @@ import {
   FlatList,
 } from "react-native";
 import { Screen } from "@/components/Screen";
-import { FilterTemplate } from "@/components/FilterTemplate";
 import { GlobalText } from "@/components/GlobalText";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Filter } from "@/types/Filter";
 import { Book, SearchResponse } from "@/types/Book";
 import { BookCard } from "@/components/BookCard";
-import { Language } from "@/types/Language";
 
 export default function Catalogo() {
-  const [filters, setFilters] = useState<Filter[]>([
-    { id: 0, name: "Todos", isActive: true },
-    { id: 1, name: "Português", isActive: false, language: "por" },
-    { id: 2, name: "Inglês", isActive: false, language: "eng" },
-  ]);
-
   const [books, setBooks] = useState<Book[]>([]);
 
-  const [search, setSearch] = useState<string | undefined>("");
+  const [search, setSearch] = useState<string>("");
 
-  async function searchBooks(
-    term: string,
-    language?: Language,
-  ): Promise<Book[]> {
+  async function searchBooks(term: string | undefined): Promise<Book[]> {
     const response = await fetch(
       `https://openlibrary.org/search.json?q=${term}&limit=20&fields=key,title,author_name,cover_i,first_publish_year`,
     );
@@ -46,14 +34,15 @@ export default function Catalogo() {
 
   useEffect(() => {
     async function load() {
-      const books = await searchBooks("Tolkien");
+      const term = search.trim() || "Brasil";
+      const books = await searchBooks(term);
       setBooks(books);
-
-      console.log(books);
     }
 
-    load();
-  }, []);
+    const timer = setTimeout(load, 1000);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   return (
     <Screen scroll={false}>
@@ -97,38 +86,17 @@ export default function Catalogo() {
                   ></TextInput>
                 </View>
               </View>
-              <View style={styles.filtersContainer}>
-                {filters.map((filter) => {
-                  return (
-                    <Pressable
-                      key={filter.id}
-                      onPress={() => {
-                        const index: number = filters.findIndex(
-                          (f) => f.id === filter.id,
-                        );
-
-                        const newArray: Filter[] = filters.map((filter) =>
-                          filter.id === index
-                            ? { ...filter, isActive: true }
-                            : { ...filter, isActive: false },
-                        );
-
-                        setFilters(newArray);
-                      }}
-                    >
-                      <FilterTemplate filter={filter} />
-                    </Pressable>
-                  );
-                })}
-              </View>
+              <GlobalText>
+                {books.length !== 0
+                  ? `Foram encontrados ${books.length} resultados ${search && `para "${search}"`}`
+                  : `Carregando conteúdo...`}
+              </GlobalText>
             </View>
           }
-          numColumns={2}
           showsVerticalScrollIndicator={false}
           data={books}
           renderItem={({ item }) => <BookCard book={item} />}
           keyExtractor={(item) => item.key}
-          columnWrapperStyle={{ gap: 40 }}
           contentContainerStyle={styles.listContent}
         />
       </View>
@@ -144,11 +112,11 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 28,
     paddingBottom: 40,
-    gap: 40,
+    gap: 14,
   },
 
   header: {
-    gap: 25,
+    gap: 15,
   },
 
   titleContainer: {

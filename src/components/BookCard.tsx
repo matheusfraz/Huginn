@@ -17,8 +17,7 @@ export function BookCard({ book }: BookCardProps) {
           <Image source={{ uri: coverUrl }} style={styles.cover} />
         ) : (
           <View style={[styles.cover, styles.noCover]}>
-            <Ionicons name="book-outline" size={36} color="#93A69F" />
-            <GlobalText style={styles.noCoverText}>Sem capa</GlobalText>
+            <Ionicons name="book-outline" size={28} color="#93A69F" />
           </View>
         )}
       </View>
@@ -44,18 +43,19 @@ export function BookCard({ book }: BookCardProps) {
 
 const styles = StyleSheet.create({
   bookContainer: {
-    flex: 1,
-    maxWidth: "48%",
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#0a201f",
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#1f4642",
-    padding: 10,
-    gap: 10,
+    padding: 12,
+    gap: 14,
   },
 
   coverShadow: {
-    borderRadius: 12,
+    width: 72,
+    borderRadius: 8,
     backgroundColor: "#1f4642",
     shadowColor: "#000",
     shadowOpacity: 0.4,
@@ -67,35 +67,28 @@ const styles = StyleSheet.create({
   cover: {
     width: "100%",
     aspectRatio: 2 / 3,
-    borderRadius: 12,
+    borderRadius: 8,
   },
 
   noCover: {
     backgroundColor: "#1f4642",
     justifyContent: "center",
     alignItems: "center",
-    gap: 6,
-  },
-
-  noCoverText: {
-    fontSize: 12,
-    color: "#93A69F",
   },
 
   info: {
+    flex: 1,
     gap: 4,
-    paddingHorizontal: 2,
   },
 
   title: {
     fontFamily: "Literata_700Bold",
-    fontSize: 15,
-    lineHeight: 20,
-    minHeight: 40,
+    fontSize: 16,
+    lineHeight: 21,
   },
 
   author: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#A9B8B3",
   },
 

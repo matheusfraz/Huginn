@@ -4,6 +4,7 @@ export type Book = {
   author_name?: string[];
   cover_i?: number;
   first_publish_year?: number;
+  language?: string[];
 };
 
 export type SearchResponse = {
