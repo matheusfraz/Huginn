@@ -1,14 +1,5 @@
 import { Redirect } from "expo-router";
-import { StyleSheet } from "react-native";
 
 export default function Index() {
-  return <Redirect href={"/login"} />;
+  return <Redirect href="/login" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

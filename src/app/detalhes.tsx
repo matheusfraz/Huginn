@@ -13,6 +13,7 @@ import { GlobalText } from "@/components/GlobalText";
 import { Screen } from "@/components/Screen";
 import type { Book } from "@/types/Book";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useReading } from "@/contexts/ReadingContext";
 
 type WorkResponse = {
   description?: string | { value?: string };
@@ -43,6 +44,7 @@ export default function Detalhes() {
     first_publish_year: year ? Number(year) : undefined,
   };
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { setLastReadBook } = useReading();
   const favorite = isFavorite(bookKey);
 
   const [description, setDescription] = useState("");
@@ -51,7 +53,6 @@ export default function Detalhes() {
   const [requestId, setRequestId] = useState(0);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<string[]>([]);
-  const [readingStarted, setReadingStarted] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -166,19 +167,15 @@ export default function Detalhes() {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => setReadingStarted(true)}
+          onPress={() => {
+            setLastReadBook(selectedBook);
+            router.push("/leitura");
+          }}
           style={styles.readButton}
         >
           <Ionicons name="book" size={20} color="#103330" />
-          <GlobalText style={styles.readLabel}>
-            {readingStarted ? "Leitura iniciada" : "Iniciar leitura"}
-          </GlobalText>
+          <GlobalText style={styles.readLabel}>Iniciar leitura</GlobalText>
         </Pressable>
-        {readingStarted && (
-          <GlobalText style={styles.startedMessage}>
-            Você iniciou a leitura de “{title}”.
-          </GlobalText>
-        )}
 
         <View style={styles.section}>
           <GlobalText style={styles.sectionTitle}>Comentários</GlobalText>
@@ -270,7 +267,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   readLabel: { color: "#103330", fontFamily: "Literata_700Bold", fontSize: 16 },
-  startedMessage: { color: "#C4D0C7", textAlign: "center", fontSize: 13, marginTop: 8 },
   commentInput: {
     minHeight: 100,
     padding: 14,

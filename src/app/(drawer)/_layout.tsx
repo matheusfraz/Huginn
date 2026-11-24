@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 
 export const unstable_settings = {
-  initialRouteName: "catalogo",
+  initialRouteName: "inicio",
 };
 
 export default function DrawerLayout() {
@@ -17,6 +17,16 @@ export default function DrawerLayout() {
         drawerLabelStyle: { fontFamily: "Literata_400Regular", fontSize: 15 },
       }}
     >
+      <Drawer.Screen
+        name="inicio"
+        options={{
+          title: "Início",
+          drawerLabel: "Início",
+          drawerIcon: ({ size }) => (
+            <DrawerIcon name="home-outline" color={"white"} size={size} />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="catalogo"
         options={{
