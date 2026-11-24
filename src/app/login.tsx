@@ -85,7 +85,7 @@ export default function Login() {
                 login.password === authorizedLogin.password
               ) {
                 setError(false);
-                router.replace("/catalogo");
+                router.replace("/inicio");
               } else {
                 setError(true);
               }
