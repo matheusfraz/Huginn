@@ -11,8 +11,17 @@ interface BookCardProps {
 
 export function BookCard({ book }: BookCardProps) {
   const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const {
+    isFavorite,
+    isReading,
+    isRead,
+    toggleFavorite,
+    toggleReading,
+    toggleRead,
+  } = useFavorites();
   const favorite = isFavorite(book.key);
+  const reading = isReading(book.key);
+  const read = isRead(book.key);
 
   return (
     <View style={styles.bookContainer}>
@@ -60,61 +69,135 @@ export function BookCard({ book }: BookCardProps) {
         </View>
       </Pressable>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={
-          favorite
-            ? `Remover ${book.title} dos favoritos`
-            : `Adicionar ${book.title} aos favoritos`
-        }
-        accessibilityState={{ selected: favorite }}
-        onPress={() => toggleFavorite(book)}
-        style={({ pressed }) => [styles.favoriteButton, pressed && styles.favoritePressed]}
-      >
-        <Ionicons
-          name={favorite ? "heart" : "heart-outline"}
-          size={23}
-          color={favorite ? "#E58B80" : "#D9B8A4"}
-        />
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            favorite
+              ? `Remover ${book.title} dos favoritos`
+              : `Adicionar ${book.title} aos favoritos`
+          }
+          accessibilityState={{ selected: favorite }}
+          onPress={() => toggleFavorite(book)}
+          style={({ pressed }) => [
+            styles.actionButton,
+            favorite && styles.actionButtonActive,
+            pressed && styles.actionButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name={favorite ? "heart" : "heart-outline"}
+            size={18}
+            color={favorite ? "#E58B80" : "#D9B8A4"}
+          />
+          <GlobalText style={[styles.actionText, favorite && { color: "#E58B80" }]}>
+            Favorito
+          </GlobalText>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            reading
+              ? `Desmarcar ${book.title} como lendo`
+              : `Marcar ${book.title} como lendo`
+          }
+          accessibilityState={{ selected: reading }}
+          onPress={() => toggleReading(book)}
+          style={({ pressed }) => [
+            styles.actionButton,
+            reading && styles.actionButtonActive,
+            pressed && styles.actionButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name={reading ? "book" : "book-outline"}
+            size={18}
+            color={reading ? "#8EC5E8" : "#D9B8A4"}
+          />
+          <GlobalText style={[styles.actionText, reading && { color: "#8EC5E8" }]}>
+            Lendo
+          </GlobalText>
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            read
+              ? `Desmarcar ${book.title} como lido`
+              : `Marcar ${book.title} como lido`
+          }
+          accessibilityState={{ selected: read }}
+          onPress={() => toggleRead(book)}
+          style={({ pressed }) => [
+            styles.actionButton,
+            read && styles.actionButtonActive,
+            pressed && styles.actionButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name={read ? "checkmark-circle" : "checkmark-circle-outline"}
+            size={18}
+            color={read ? "#9ED39A" : "#D9B8A4"}
+          />
+          <GlobalText style={[styles.actionText, read && { color: "#9ED39A" }]}>
+            Lido
+          </GlobalText>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   bookContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#0a201f",
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#1f4642",
-    padding: 12,
+    padding: 14,
     gap: 14,
   },
 
   bookContent: {
-    flex: 1,
-    minWidth: 0,
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
   },
 
-  favoriteButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+  actions: {
+    flexDirection: "row",
+    gap: 10,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#1f4642",
+  },
+
+  actionButton: {
+    flex: 1,
+    height: 38,
+    borderRadius: 19,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: 6,
     backgroundColor: "#17332F",
     borderWidth: 1,
     borderColor: "#31564F",
   },
 
-  favoritePressed: {
-    backgroundColor: "#294B45",
-    transform: [{ scale: 0.92 }],
+  actionButtonActive: {
+    backgroundColor: "#1F4642",
+    borderColor: "#4A7A70",
+  },
+
+  actionButtonPressed: {
+    transform: [{ scale: 0.95 }],
+  },
+
+  actionText: {
+    fontSize: 13,
+    color: "#D9B8A4",
   },
 
   coverShadow: {

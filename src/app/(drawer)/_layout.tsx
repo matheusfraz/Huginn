@@ -1,10 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 
+export const unstable_settings = {
+  initialRouteName: "catalogo",
+};
+
 export default function DrawerLayout() {
   return (
     <Drawer
-      initialRouteName="(tabs)"
       screenOptions={{
         headerShown: false,
         drawerStyle: { backgroundColor: "#103330", width: 285 },
@@ -15,12 +18,22 @@ export default function DrawerLayout() {
       }}
     >
       <Drawer.Screen
-        name="(tabs)"
+        name="catalogo"
         options={{
-          title: "Início",
-          drawerLabel: "Início",
+          title: "Catálogo",
+          drawerLabel: "Catálogo",
           drawerIcon: ({ color, size }) => (
-            <DrawerIcon name="home-outline" color={'white'} size={size} />
+            <DrawerIcon name="library-outline" color={"white"} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="perfil"
+        options={{
+          title: "Perfil",
+          drawerLabel: "Perfil",
+          drawerIcon: ({ color, size }) => (
+            <DrawerIcon name="person-outline" color={"white"} size={size} />
           ),
         }}
       />
@@ -30,7 +43,11 @@ export default function DrawerLayout() {
           title: "Sobre",
           drawerLabel: "Sobre",
           drawerIcon: ({ color, size }) => (
-            <DrawerIcon name="information-circle-outline" color={'white'} size={size} />
+            <DrawerIcon
+              name="information-circle-outline"
+              color={"white"}
+              size={size}
+            />
           ),
         }}
       />
@@ -47,5 +64,5 @@ function DrawerIcon({
   color: string;
   size: number;
 }) {
-  return <Ionicons name={name} color={color} size={size} />;
+  return <Ionicons name={name} color={"white"} size={size} />;
 }

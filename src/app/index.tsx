@@ -1,10 +1,8 @@
-import { Text, View, StyleSheet } from "react-native";
 import { Redirect } from "expo-router";
+import { StyleSheet } from "react-native";
 
 export default function Index() {
-  return (
-    <Redirect href={"/catalogo"}/>
-  );
+  return <Redirect href={"/login"} />;
 }
 
 const styles = StyleSheet.create({
