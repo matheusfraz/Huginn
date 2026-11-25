@@ -5,13 +5,7 @@ import { useReadingHistory } from "@/contexts/ReadingHistoryContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
+import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -44,19 +38,29 @@ export default function Leitura() {
   const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning, tick]);
+    if (!isRunning) {
+      return;
+    }
+
+    const timer = setTimeout(tick, 1000);
+    return () => clearTimeout(timer);
+  }, [isRunning, secondsRemaining, phase]);
 
   if (!lastReadBook) {
     return (
       <Screen scroll>
         <View style={styles.emptyPage}>
           <Ionicons name="book-outline" size={48} color="#D9B8A4" />
-          <GlobalText style={styles.emptyTitle}>Nenhum livro selecionado</GlobalText>
-          <Pressable onPress={() => router.replace("/catalogo")} style={styles.primaryButton}>
-            <GlobalText style={styles.primaryButtonText}>Abrir catálogo</GlobalText>
+          <GlobalText style={styles.emptyTitle}>
+            Nenhum livro selecionado
+          </GlobalText>
+          <Pressable
+            onPress={() => router.replace("/catalogo")}
+            style={styles.primaryButton}
+          >
+            <GlobalText style={styles.primaryButtonText}>
+              Abrir catálogo
+            </GlobalText>
           </Pressable>
         </View>
       </Screen>
@@ -75,7 +79,14 @@ export default function Leitura() {
         : "Tempo de leitura";
 
   async function saveSession() {
-    if (!sessionEnded || !lastReadBook || !sessionId || sessionSaved || isSaving) return;
+    if (
+      !sessionEnded ||
+      !lastReadBook ||
+      !sessionId ||
+      sessionSaved ||
+      isSaving
+    )
+      return;
 
     setIsSaving(true);
     setSaveError(false);
@@ -149,7 +160,9 @@ export default function Leitura() {
           <GlobalText style={styles.timerCaption}>
             {isRest ? "DESCANSO" : "POMODORO"}
           </GlobalText>
-          <GlobalText style={styles.timer}>{formatTime(secondsRemaining)}</GlobalText>
+          <GlobalText style={styles.timer}>
+            {formatTime(secondsRemaining)}
+          </GlobalText>
           <GlobalText style={styles.timerHint}>
             {sessionEnded
               ? "Sessão finalizada"
@@ -176,7 +189,9 @@ export default function Leitura() {
             {phase === "cycleComplete" ? (
               <Pressable onPress={startNewCycle} style={styles.primaryButton}>
                 <Ionicons name="refresh" size={20} color="#103330" />
-                <GlobalText style={styles.primaryButtonText}>Iniciar novo ciclo</GlobalText>
+                <GlobalText style={styles.primaryButtonText}>
+                  Iniciar novo ciclo
+                </GlobalText>
               </Pressable>
             ) : (
               <Pressable onPress={togglePause} style={styles.primaryButton}>
@@ -192,7 +207,9 @@ export default function Leitura() {
             )}
             <Pressable onPress={endSession} style={styles.endButton}>
               <Ionicons name="stop-outline" size={19} color="#E6B7A9" />
-              <GlobalText style={styles.endButtonText}>Encerrar sessão</GlobalText>
+              <GlobalText style={styles.endButtonText}>
+                Encerrar sessão
+              </GlobalText>
             </Pressable>
           </View>
         )}
@@ -216,23 +233,33 @@ export default function Leitura() {
 
         {sessionEnded && (
           <View style={styles.summaryCard}>
-            <GlobalText style={styles.summaryTitle}>Resumo da sessão</GlobalText>
+            <GlobalText style={styles.summaryTitle}>
+              Resumo da sessão
+            </GlobalText>
             <View style={styles.summaryRow}>
-              <GlobalText style={styles.summaryLabel}>Tempo dedicado à leitura</GlobalText>
+              <GlobalText style={styles.summaryLabel}>
+                Tempo dedicado à leitura
+              </GlobalText>
               <GlobalText style={styles.summaryValue}>
                 {formatTime(readingSeconds)}
               </GlobalText>
             </View>
             <View style={styles.summaryRow}>
-              <GlobalText style={styles.summaryLabel}>Ciclos concluídos</GlobalText>
-              <GlobalText style={styles.summaryValue}>{completedCycles}</GlobalText>
+              <GlobalText style={styles.summaryLabel}>
+                Ciclos concluídos
+              </GlobalText>
+              <GlobalText style={styles.summaryValue}>
+                {completedCycles}
+              </GlobalText>
             </View>
           </View>
         )}
 
         {sessionEnded && !sessionSaved && (
           <View style={styles.commentSection}>
-            <GlobalText style={styles.summaryTitle}>Como foi sua leitura?</GlobalText>
+            <GlobalText style={styles.summaryTitle}>
+              Como foi sua leitura?
+            </GlobalText>
             <TextInput
               value={commentDraft}
               onChangeText={setCommentDraft}
@@ -275,7 +302,9 @@ export default function Leitura() {
 
         {!sessionEnded && phase === "cycleComplete" && (
           <GlobalText style={styles.cycleMessage}>
-            Você concluiu {completedCycles} {completedCycles === 1 ? "ciclo" : "ciclos"}. Faça uma pausa e comece outro quando quiser.
+            Você concluiu {completedCycles}{" "}
+            {completedCycles === 1 ? "ciclo" : "ciclos"}. Faça uma pausa e
+            comece outro quando quiser.
           </GlobalText>
         )}
       </View>
@@ -285,7 +314,12 @@ export default function Leitura() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, paddingBottom: 36 },
-  backButton: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8 },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 8,
+  },
   bookCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -395,7 +429,12 @@ const styles = StyleSheet.create({
     gap: 13,
   },
   summaryTitle: { fontWeight: "700", fontSize: 17 },
-  summaryRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
+  summaryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+  },
   summaryLabel: { color: "#AFC2B7", fontSize: 13, flex: 1 },
   summaryValue: { fontWeight: "700", fontSize: 14 },
   commentSection: { marginTop: 24, gap: 10 },
@@ -407,7 +446,7 @@ const styles = StyleSheet.create({
     borderColor: "#315B53",
     backgroundColor: "#0A201F",
     color: "#F5F0E6",
-    
+
     fontSize: 14,
   },
   commentButton: {
@@ -433,7 +472,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#17413C",
   },
   savedNoticeText: { color: "#B7D6C8", fontWeight: "600", fontSize: 13 },
-  cycleMessage: { color: "#AFC2B7", fontSize: 13, lineHeight: 21, textAlign: "center", marginTop: 14 },
-  emptyPage: { flex: 1, alignItems: "center", justifyContent: "center", padding: 28, gap: 16 },
+  cycleMessage: {
+    color: "#AFC2B7",
+    fontSize: 13,
+    lineHeight: 21,
+    textAlign: "center",
+    marginTop: 14,
+  },
+  emptyPage: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 28,
+    gap: 16,
+  },
   emptyTitle: { fontWeight: "700", fontSize: 19, textAlign: "center" },
 });

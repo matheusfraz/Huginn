@@ -1,10 +1,13 @@
-import { createContext, useCallback, useContext, useReducer } from "react";
+import { createContext, useContext, useState } from "react";
 import type { PropsWithChildren } from "react";
 import type { Book } from "@/types/Book";
 
 export type ReadingPhase = "reading" | "rest" | "cycleComplete";
 
-type SessionState = {
+const READING_TIME = 25 * 60;
+const REST_TIME = 5 * 60;
+
+type ReadingContextValue = {
   lastReadBook: Book | null;
   sessionId: string | null;
   phase: ReadingPhase;
@@ -12,109 +15,9 @@ type SessionState = {
   isRunning: boolean;
   readingSeconds: number;
   completedCycles: number;
-  currentCycleSkipped: boolean;
   sessionEnded: boolean;
   sessionEndedAt: string | null;
   sessionSaved: boolean;
-};
-
-type SessionAction =
-  | { type: "start"; book: Book; sessionId: string }
-  | { type: "tick" }
-  | { type: "skipToRest" }
-  | { type: "togglePause" }
-  | { type: "newCycle" }
-  | { type: "end"; endedAt: string }
-  | { type: "saved" };
-
-const initialState: SessionState = {
-  lastReadBook: null,
-  sessionId: null,
-  phase: "reading",
-  secondsRemaining: 25 * 60,
-  isRunning: false,
-  readingSeconds: 0,
-  completedCycles: 0,
-  currentCycleSkipped: false,
-  sessionEnded: false,
-  sessionEndedAt: null,
-  sessionSaved: false,
-};
-
-function sessionReducer(state: SessionState, action: SessionAction): SessionState {
-  switch (action.type) {
-    case "start":
-      return {
-        ...initialState,
-        lastReadBook: action.book,
-        sessionId: action.sessionId,
-        isRunning: true,
-      };
-    case "tick":
-      if (!state.isRunning || state.sessionEnded) return state;
-      if (state.secondsRemaining > 1) {
-        return {
-          ...state,
-          secondsRemaining: state.secondsRemaining - 1,
-          readingSeconds:
-            state.phase === "reading" ? state.readingSeconds + 1 : state.readingSeconds,
-        };
-      }
-      if (state.phase === "reading") {
-        return {
-          ...state,
-          phase: "rest",
-          secondsRemaining: 5 * 60,
-          readingSeconds: state.readingSeconds + 1,
-          currentCycleSkipped: false,
-        };
-      }
-      if (state.phase === "rest") {
-        return {
-          ...state,
-          phase: "cycleComplete",
-          secondsRemaining: 0,
-          isRunning: false,
-          completedCycles:
-            state.completedCycles + (state.currentCycleSkipped ? 0 : 1),
-          currentCycleSkipped: false,
-        };
-      }
-      return state;
-    case "skipToRest":
-      if (state.sessionEnded || state.phase !== "reading") return state;
-      return {
-        ...state,
-        phase: "rest",
-        secondsRemaining: 5 * 60,
-        isRunning: true,
-        currentCycleSkipped: true,
-      };
-    case "togglePause":
-      if (state.sessionEnded || state.phase === "cycleComplete") return state;
-      return { ...state, isRunning: !state.isRunning };
-    case "newCycle":
-      if (state.sessionEnded) return state;
-      return {
-        ...state,
-        phase: "reading",
-        secondsRemaining: 25 * 60,
-        isRunning: true,
-        currentCycleSkipped: false,
-      };
-    case "end":
-      return {
-        ...state,
-        isRunning: false,
-        sessionEnded: true,
-        sessionEndedAt: action.endedAt,
-      };
-    case "saved":
-      return { ...state, sessionSaved: true };
-  }
-}
-
-type ReadingContextValue = SessionState & {
   startReading: (book: Book) => void;
   tick: () => void;
   skipToRest: () => void;
@@ -127,31 +30,112 @@ type ReadingContextValue = SessionState & {
 const ReadingContext = createContext<ReadingContextValue | undefined>(undefined);
 
 export function ReadingProvider({ children }: PropsWithChildren) {
-  const [state, dispatch] = useReducer(sessionReducer, initialState);
+  const [lastReadBook, setLastReadBook] = useState<Book | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [phase, setPhase] = useState<ReadingPhase>("reading");
+  const [secondsRemaining, setSecondsRemaining] = useState(READING_TIME);
+  const [isRunning, setIsRunning] = useState(false);
+  const [readingSeconds, setReadingSeconds] = useState(0);
+  const [completedCycles, setCompletedCycles] = useState(0);
+  const [skippedReading, setSkippedReading] = useState(false);
+  const [sessionEnded, setSessionEnded] = useState(false);
+  const [sessionEndedAt, setSessionEndedAt] = useState<string | null>(null);
+  const [sessionSaved, setSessionSaved] = useState(false);
 
-  const startReading = useCallback(
-    (book: Book) =>
-      dispatch({
-        type: "start",
-        book,
-        sessionId: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
-      }),
-    [],
-  );
-  const tick = useCallback(() => dispatch({ type: "tick" }), []);
-  const skipToRest = useCallback(() => dispatch({ type: "skipToRest" }), []);
-  const togglePause = useCallback(() => dispatch({ type: "togglePause" }), []);
-  const startNewCycle = useCallback(() => dispatch({ type: "newCycle" }), []);
-  const endSession = useCallback(
-    () => dispatch({ type: "end", endedAt: new Date().toISOString() }),
-    [],
-  );
-  const markSessionSaved = useCallback(() => dispatch({ type: "saved" }), []);
+  function startReading(book: Book) {
+    setLastReadBook(book);
+    setSessionId(String(Date.now()));
+    setPhase("reading");
+    setSecondsRemaining(READING_TIME);
+    setIsRunning(true);
+    setReadingSeconds(0);
+    setCompletedCycles(0);
+    setSkippedReading(false);
+    setSessionEnded(false);
+    setSessionEndedAt(null);
+    setSessionSaved(false);
+  }
+
+  function tick() {
+    if (!isRunning || sessionEnded) {
+      return;
+    }
+
+    if (secondsRemaining > 1) {
+      setSecondsRemaining(secondsRemaining - 1);
+      if (phase === "reading") {
+        setReadingSeconds(readingSeconds + 1);
+      }
+      return;
+    }
+
+    if (phase === "reading") {
+      setReadingSeconds(readingSeconds + 1);
+      setPhase("rest");
+      setSecondsRemaining(REST_TIME);
+      return;
+    }
+
+    if (phase === "rest") {
+      setPhase("cycleComplete");
+      setSecondsRemaining(0);
+      setIsRunning(false);
+      if (!skippedReading) {
+        setCompletedCycles(completedCycles + 1);
+      }
+    }
+  }
+
+  function skipToRest() {
+    if (sessionEnded || phase !== "reading") {
+      return;
+    }
+    setPhase("rest");
+    setSecondsRemaining(REST_TIME);
+    setIsRunning(true);
+    setSkippedReading(true);
+  }
+
+  function togglePause() {
+    if (sessionEnded || phase === "cycleComplete") {
+      return;
+    }
+    setIsRunning(!isRunning);
+  }
+
+  function startNewCycle() {
+    if (sessionEnded) {
+      return;
+    }
+    setPhase("reading");
+    setSecondsRemaining(READING_TIME);
+    setIsRunning(true);
+    setSkippedReading(false);
+  }
+
+  function endSession() {
+    setIsRunning(false);
+    setSessionEnded(true);
+    setSessionEndedAt(new Date().toISOString());
+  }
+
+  function markSessionSaved() {
+    setSessionSaved(true);
+  }
 
   return (
     <ReadingContext.Provider
       value={{
-        ...state,
+        lastReadBook,
+        sessionId,
+        phase,
+        secondsRemaining,
+        isRunning,
+        readingSeconds,
+        completedCycles,
+        sessionEnded,
+        sessionEndedAt,
+        sessionSaved,
         startReading,
         tick,
         skipToRest,
