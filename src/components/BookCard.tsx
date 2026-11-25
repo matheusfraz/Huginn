@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontFamily: "Literata_700Bold",
+    fontWeight: "700",
     fontSize: 16,
     lineHeight: 21,
   },

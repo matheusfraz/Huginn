@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   brand: {
     marginTop: 8,
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 43,
   },
   tagline: {
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   heading: {
-    fontFamily: "Literata_700Bold",
+    fontWeight: "700",
     fontSize: 19,
     marginBottom: 7,
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   names: {
-    fontFamily: "Literata_700Bold",
+    fontWeight: "700",
     fontSize: 16,
     marginTop: 4,
   },

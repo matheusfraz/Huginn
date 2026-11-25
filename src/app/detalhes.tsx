@@ -44,7 +44,7 @@ export default function Detalhes() {
     first_publish_year: year ? Number(year) : undefined,
   };
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { setLastReadBook } = useReading();
+  const { startReading } = useReading();
   const favorite = isFavorite(bookKey);
 
   const [description, setDescription] = useState("");
@@ -168,7 +168,7 @@ export default function Detalhes() {
         <Pressable
           accessibilityRole="button"
           onPress={() => {
-            setLastReadBook(selectedBook);
+            startReading(selectedBook);
             router.push("/leitura");
           }}
           style={styles.readButton}
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   cover: { width: 118, height: 176, borderRadius: 10, backgroundColor: "#17413C" },
   coverPlaceholder: { alignItems: "center", justifyContent: "center" },
   bookInfo: { flex: 1, gap: 8 },
-  title: { fontFamily: "Literata_700Bold", fontSize: 22, lineHeight: 30 },
+  title: { fontWeight: "700", fontSize: 22, lineHeight: 30 },
   author: { color: "#C4D0C7", fontSize: 15 },
   year: { color: "#AFC2B7", fontSize: 13 },
   favoriteButton: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#31564F",
   },
   favoriteIconActive: { backgroundColor: "#A95751" },
-  favoriteLabel: { flex: 1, fontFamily: "Literata_700Bold", fontSize: 13 },
+  favoriteLabel: { flex: 1, fontWeight: "700", fontSize: 13 },
   favoriteTag: {
     paddingHorizontal: 9,
     paddingVertical: 5,
@@ -249,13 +249,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#28564D",
   },
   favoriteTagActive: { backgroundColor: "#A95751" },
-  favoriteTagText: { fontSize: 9, fontFamily: "Literata_700Bold", letterSpacing: 0.6 },
+  favoriteTagText: { fontSize: 9, fontWeight: "700", letterSpacing: 0.6 },
   section: { marginTop: 28 },
-  sectionTitle: { fontFamily: "Literata_700Bold", fontSize: 19, marginBottom: 10 },
+  sectionTitle: { fontWeight: "700", fontSize: 19, marginBottom: 10 },
   description: { color: "#D5DED6", fontSize: 14, lineHeight: 23 },
   feedback: { gap: 10, alignItems: "flex-start", paddingVertical: 8 },
   muted: { color: "#AFC2B7", fontSize: 14, lineHeight: 22 },
-  retry: { color: "#E4B99D", fontFamily: "Literata_700Bold", paddingVertical: 5 },
+  retry: { color: "#E4B99D", fontWeight: "700", paddingVertical: 5 },
   readButton: {
     minHeight: 54,
     marginTop: 26,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
   },
-  readLabel: { color: "#103330", fontFamily: "Literata_700Bold", fontSize: 16 },
+  readLabel: { color: "#103330", fontWeight: "700", fontSize: 16 },
   commentInput: {
     minHeight: 100,
     padding: 14,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     borderColor: "#315B53",
     backgroundColor: "#0A201F",
     color: "#F5F0E6",
-    fontFamily: "Literata_400Regular",
+    
     fontSize: 14,
   },
   commentButton: {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#28564D",
   },
   disabledButton: { opacity: 0.5 },
-  commentButtonText: { fontFamily: "Literata_700Bold", fontSize: 14 },
+  commentButtonText: { fontWeight: "700", fontSize: 14 },
   commentCard: {
     marginTop: 10,
     padding: 14,

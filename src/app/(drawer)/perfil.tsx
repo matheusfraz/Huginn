@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   name: {
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 34,
   },
 
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#103330",
     color: "#F5F0E6",
-    fontFamily: "Literata_400Regular",
+    
     fontSize: 18,
   },
   saveButton: {
@@ -276,14 +276,14 @@ const styles = StyleSheet.create({
     borderColor: "#F5F0E6",
   },
   tabCount: {
-    fontFamily: "Literata_700Bold",
+    fontWeight: "700",
     fontSize: 20,
   },
   tabLabel: {
     fontSize: 13,
   },
   sectionTitle: {
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 28,
   },
   emptyArea: {

@@ -14,7 +14,7 @@ export default function DrawerLayout() {
         drawerActiveTintColor: "#F5F0E6",
         drawerInactiveTintColor: "#AFC2B7",
         drawerActiveBackgroundColor: "#28564D",
-        drawerLabelStyle: { fontFamily: "Literata_400Regular", fontSize: 15 },
+        drawerLabelStyle: {  fontSize: 15 },
       }}
     >
       <Drawer.Screen

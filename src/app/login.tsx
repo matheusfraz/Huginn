@@ -93,7 +93,7 @@ export default function Login() {
           >
             <GlobalText
               style={{
-                fontFamily: "Literata_700Bold",
+                fontWeight: "700",
                 fontSize: 25,
                 color: "#103330",
               }}
@@ -112,7 +112,7 @@ export default function Login() {
         <Text
           style={{
             marginBottom: 50,
-            fontFamily: "Literata_400Regular",
+            
             color: "#F5F0E6",
           }}
         >
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   logoText: {
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 50,
     color: "#F5F0E6",
   },
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
     marginRight: 10,
-    fontFamily: "Literata_400Regular",
+    
     color: "#F5F0E6",
     fontVariant: ["lining-nums"],
   },

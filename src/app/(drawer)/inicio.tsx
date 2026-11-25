@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
   menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: 4, marginLeft: -12 },
   heading: { marginTop: 14, marginBottom: 30 },
   eyebrow: { color: "#D9B8A4", fontSize: 11, letterSpacing: 1.5 },
-  title: { fontFamily: "CormorantGaramond_600SemiBold", fontSize: 46, lineHeight: 54 },
+  title: { fontWeight: "600", fontSize: 46, lineHeight: 54 },
   subtitle: { color: "#AFC2B7", fontSize: 15, marginTop: 2 },
   sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  sectionTitle: { fontFamily: "Literata_700Bold", fontSize: 17 },
+  sectionTitle: { fontWeight: "700", fontSize: 17 },
   readingCard: {
     backgroundColor: "#17413C",
     borderColor: "#315B53",
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   coverPlaceholder: { alignItems: "center", justifyContent: "center" },
   bookInfo: { flex: 1, minWidth: 150, gap: 5 },
   cardEyebrow: { color: "#D9B8A4", fontSize: 10, letterSpacing: 1 },
-  bookTitle: { fontFamily: "Literata_700Bold", fontSize: 16, lineHeight: 23 },
+  bookTitle: { fontWeight: "700", fontSize: 16, lineHeight: 23 },
   author: { color: "#AFC2B7", fontSize: 13 },
   resumeButton: {
     width: "100%",
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     backgroundColor: "#F5F0E6",
   },
-  resumeLabel: { color: "#103330", fontFamily: "Literata_700Bold", fontSize: 14 },
+  resumeLabel: { color: "#103330", fontWeight: "700", fontSize: 14 },
   pressed: { opacity: 0.82, transform: [{ scale: 0.985 }] },
   emptyCard: {
     alignItems: "center",
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#28564D",
     marginBottom: 14,
   },
-  emptyTitle: { fontFamily: "Literata_700Bold", fontSize: 16, textAlign: "center" },
+  emptyTitle: { fontWeight: "700", fontSize: 16, textAlign: "center" },
   emptyText: { color: "#AFC2B7", textAlign: "center", fontSize: 13, lineHeight: 21, marginTop: 7 },
   exploreButton: {
     minHeight: 46,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#28564D",
   },
-  exploreLabel: { fontFamily: "Literata_700Bold", fontSize: 14 },
+  exploreLabel: { fontWeight: "700", fontSize: 14 },
   quoteCard: {
     marginTop: 22,
     padding: 18,

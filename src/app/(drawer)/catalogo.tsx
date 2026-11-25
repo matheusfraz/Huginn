@@ -80,7 +80,7 @@ export default function Catalogo() {
                   <GlobalText
                     style={{
                       fontSize: 50,
-                      fontFamily: "CormorantGaramond_600SemiBold",
+                      fontWeight: "600",
                       margin: 0,
                     }}
                   >
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
 
   messageTitle: {
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 26,
     textAlign: "center",
   },
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
 
   retryText: {
-    fontFamily: "Literata_700Bold",
+    fontWeight: "700",
     color: "#103330",
     fontSize: 16,
   },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 9,
     color: "#F5F0E6",
     padding: 10,
-    fontFamily: "CormorantGaramond_600SemiBold",
+    fontWeight: "600",
     fontSize: 23,
   },
 });
