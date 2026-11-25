@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { View, StyleSheet, Image, Pressable, TextInput } from "react-native";
-import { DrawerToggleButton } from "expo-router/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import { Screen } from "@/components/Screen";
 import { GlobalText } from "@/components/GlobalText";
 import { BookCard } from "@/components/BookCard";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { DrawerToggleButton } from "expo-router/drawer";
 
 type Tab = "lendo" | "favoritos" | "lidos";
 
@@ -63,10 +64,7 @@ export default function Perfil() {
   return (
     <Screen scroll={true}>
       <View style={styles.container}>
-        <View style={styles.menuButton}>
-          <DrawerToggleButton tintColor="#F5F0E6" />
-        </View>
-
+        <View style={styles.menuButton}><DrawerToggleButton tintColor="#F5F0E6" /></View>
         <View style={styles.profileCard}>
           <Pressable onPress={choosePhoto} style={styles.photoButton}>
             {photo ? (
@@ -100,6 +98,18 @@ export default function Perfil() {
             </Pressable>
           )}
         </View>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/historico-leitura")}
+          style={styles.historyButton}
+        >
+          <View style={styles.historyIcon}>
+            <Ionicons name="time-outline" size={20} color="#F5F0E6" />
+          </View>
+          <GlobalText style={styles.historyLabel}>Histórico de Leitura</GlobalText>
+          <Ionicons name="chevron-forward" size={18} color="#AFC2B7" />
+        </Pressable>
 
         <View style={styles.tabs}>
           <TabButton
@@ -173,13 +183,7 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 20,
   },
-  menuButton: {
-    height: 44,
-    alignSelf: "flex-start",
-    justifyContent: "center",
-    marginTop: -12,
-    marginLeft: -12,
-  },
+  menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: -12, marginLeft: -12 },
   profileCard: {
     alignItems: "center",
     gap: 10,
@@ -190,6 +194,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#1f4642",
   },
+  historyButton: {
+    minHeight: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#1f4642",
+    backgroundColor: "#17413C",
+  },
+  historyIcon: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 18,
+    backgroundColor: "#28564D",
+  },
+  historyLabel: { flex: 1, fontWeight: "600", fontSize: 14 },
   photoButton: {
     width: 120,
     height: 120,

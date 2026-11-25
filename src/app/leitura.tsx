@@ -1,6 +1,7 @@
 import { GlobalText } from "@/components/GlobalText";
 import { Screen } from "@/components/Screen";
 import { useReading } from "@/contexts/ReadingContext";
+import { useReadingHistory } from "@/contexts/ReadingHistoryContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -27,15 +28,20 @@ export default function Leitura() {
     readingSeconds,
     completedCycles,
     sessionEnded,
-    comments,
+    sessionEndedAt,
+    sessionId,
+    sessionSaved,
     tick,
     skipToRest,
     togglePause,
     startNewCycle,
     endSession,
-    addSessionComment,
+    markSessionSaved,
   } = useReading();
+  const { addSession } = useReadingHistory();
   const [commentDraft, setCommentDraft] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -68,11 +74,30 @@ export default function Leitura() {
         ? "Hora de descansar"
         : "Tempo de leitura";
 
-  function saveComment() {
-    const text = commentDraft.trim();
-    if (!text) return;
-    addSessionComment(text);
-    setCommentDraft("");
+  async function saveSession() {
+    if (!sessionEnded || !lastReadBook || !sessionId || sessionSaved || isSaving) return;
+
+    setIsSaving(true);
+    setSaveError(false);
+    try {
+      await addSession({
+        sessionId,
+        bookId: lastReadBook.key,
+        title: lastReadBook.title,
+        coverUrl: lastReadBook.cover_i
+          ? `https://covers.openlibrary.org/b/id/${lastReadBook.cover_i}-L.jpg`
+          : null,
+        date: sessionEndedAt ?? new Date().toISOString(),
+        readingSeconds,
+        completedCycles,
+        comment: commentDraft.trim(),
+      });
+      markSessionSaved();
+    } catch {
+      setSaveError(true);
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -172,7 +197,7 @@ export default function Leitura() {
           </View>
         )}
 
-        {!sessionEnded && phase === "reading" && (
+        {__DEV__ && !sessionEnded && phase === "reading" && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Pular para o descanso, atalho de demonstração"
@@ -205,34 +230,46 @@ export default function Leitura() {
           </View>
         )}
 
-        {sessionEnded && (
+        {sessionEnded && !sessionSaved && (
           <View style={styles.commentSection}>
             <GlobalText style={styles.summaryTitle}>Como foi sua leitura?</GlobalText>
             <TextInput
               value={commentDraft}
               onChangeText={setCommentDraft}
-              placeholder="Registre sua experiência..."
+              placeholder="Registre sua experiência... (opcional)"
               placeholderTextColor="#8DA59A"
               multiline
               textAlignVertical="top"
               style={styles.commentInput}
             />
             <Pressable
-              disabled={!commentDraft.trim()}
-              onPress={saveComment}
-              style={[
-                styles.commentButton,
-                !commentDraft.trim() && styles.disabledButton,
-              ]}
+              disabled={isSaving}
+              onPress={saveSession}
+              style={[styles.commentButton, isSaving && styles.disabledButton]}
             >
-              <Ionicons name="chatbubble-outline" size={18} color="#F5F0E6" />
-              <GlobalText style={styles.commentButtonText}>Salvar comentário</GlobalText>
+              <Ionicons
+                name={isSaving ? "hourglass-outline" : "save-outline"}
+                size={18}
+                color="#F5F0E6"
+              />
+              <GlobalText style={styles.commentButtonText}>
+                {isSaving ? "Salvando sessão..." : "Salvar sessão"}
+              </GlobalText>
             </Pressable>
-            {comments.map((comment, index) => (
-              <View key={`${index}-${comment}`} style={styles.savedComment}>
-                <GlobalText style={styles.savedCommentText}>{comment}</GlobalText>
-              </View>
-            ))}
+            {saveError && (
+              <GlobalText style={styles.saveError}>
+                Não foi possível salvar agora. Tente novamente.
+              </GlobalText>
+            )}
+          </View>
+        )}
+
+        {sessionEnded && sessionSaved && (
+          <View style={styles.savedNotice}>
+            <Ionicons name="checkmark-circle" size={22} color="#B7D6C8" />
+            <GlobalText style={styles.savedNoticeText}>
+              Sessão salva no Histórico de Leitura.
+            </GlobalText>
           </View>
         )}
 
@@ -384,8 +421,18 @@ const styles = StyleSheet.create({
   },
   disabledButton: { opacity: 0.45 },
   commentButtonText: { fontWeight: "700", fontSize: 14 },
-  savedComment: { padding: 13, borderRadius: 12, backgroundColor: "#17413C" },
-  savedCommentText: { color: "#D5DED6", fontSize: 13, lineHeight: 21 },
+  saveError: { color: "#F1A99E", fontSize: 13, lineHeight: 19 },
+  savedNotice: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 22,
+    padding: 14,
+    borderRadius: 13,
+    backgroundColor: "#17413C",
+  },
+  savedNoticeText: { color: "#B7D6C8", fontWeight: "600", fontSize: 13 },
   cycleMessage: { color: "#AFC2B7", fontSize: 13, lineHeight: 21, textAlign: "center", marginTop: 14 },
   emptyPage: { flex: 1, alignItems: "center", justifyContent: "center", padding: 28, gap: 16 },
   emptyTitle: { fontWeight: "700", fontSize: 19, textAlign: "center" },

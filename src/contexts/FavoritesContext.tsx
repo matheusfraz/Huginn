@@ -21,58 +21,36 @@ export function FavoritesProvider({ children }: PropsWithChildren) {
   const [reading, setReading] = useState<Book[]>([]);
   const [read, setRead] = useState<Book[]>([]);
 
-  function isFavorite(bookKey: string) {
-    return favorites.some((book) => book.key === bookKey);
-  }
-
-  function isReading(bookKey: string) {
-    return reading.some((book) => book.key === bookKey);
-  }
-
-  function isRead(bookKey: string) {
-    return read.some((book) => book.key === bookKey);
-  }
+  const isFavorite = (bookKey: string) => favorites.some((book) => book.key === bookKey);
+  const isReading = (bookKey: string) => reading.some((book) => book.key === bookKey);
+  const isRead = (bookKey: string) => read.some((book) => book.key === bookKey);
 
   function toggleFavorite(book: Book) {
     setFavorites((current) =>
-      current.some((favorite) => favorite.key === book.key)
-        ? current.filter((favorite) => favorite.key !== book.key)
+      current.some((item) => item.key === book.key)
+        ? current.filter((item) => item.key !== book.key)
         : [...current, book],
     );
   }
 
   function toggleReading(book: Book) {
-    if (isReading(book.key)) {
-      setReading(reading.filter((item) => item.key !== book.key));
-    } else {
+    if (isReading(book.key)) setReading(reading.filter((item) => item.key !== book.key));
+    else {
       setReading([...reading, book]);
       setRead(read.filter((item) => item.key !== book.key));
     }
   }
 
   function toggleRead(book: Book) {
-    if (isRead(book.key)) {
-      setRead(read.filter((item) => item.key !== book.key));
-    } else {
+    if (isRead(book.key)) setRead(read.filter((item) => item.key !== book.key));
+    else {
       setRead([...read, book]);
       setReading(reading.filter((item) => item.key !== book.key));
     }
   }
 
   return (
-    <FavoritesContext.Provider
-      value={{
-        favorites,
-        reading,
-        read,
-        isFavorite,
-        isReading,
-        isRead,
-        toggleFavorite,
-        toggleReading,
-        toggleRead,
-      }}
-    >
+    <FavoritesContext.Provider value={{ favorites, reading, read, isFavorite, isReading, isRead, toggleFavorite, toggleReading, toggleRead }}>
       {children}
     </FavoritesContext.Provider>
   );
@@ -80,8 +58,6 @@ export function FavoritesProvider({ children }: PropsWithChildren) {
 
 export function useFavorites() {
   const context = useContext(FavoritesContext);
-  if (!context) {
-    throw new Error("useFavorites precisa ser usado dentro de FavoritesProvider.");
-  }
+  if (!context) throw new Error("useFavorites precisa ser usado dentro de FavoritesProvider.");
   return context;
 }

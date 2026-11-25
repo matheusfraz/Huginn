@@ -6,6 +6,7 @@ export type ReadingPhase = "reading" | "rest" | "cycleComplete";
 
 type SessionState = {
   lastReadBook: Book | null;
+  sessionId: string | null;
   phase: ReadingPhase;
   secondsRemaining: number;
   isRunning: boolean;
@@ -13,20 +14,22 @@ type SessionState = {
   completedCycles: number;
   currentCycleSkipped: boolean;
   sessionEnded: boolean;
-  comments: string[];
+  sessionEndedAt: string | null;
+  sessionSaved: boolean;
 };
 
 type SessionAction =
-  | { type: "start"; book: Book }
+  | { type: "start"; book: Book; sessionId: string }
   | { type: "tick" }
   | { type: "skipToRest" }
   | { type: "togglePause" }
   | { type: "newCycle" }
-  | { type: "end" }
-  | { type: "addComment"; comment: string };
+  | { type: "end"; endedAt: string }
+  | { type: "saved" };
 
 const initialState: SessionState = {
   lastReadBook: null,
+  sessionId: null,
   phase: "reading",
   secondsRemaining: 25 * 60,
   isRunning: false,
@@ -34,7 +37,8 @@ const initialState: SessionState = {
   completedCycles: 0,
   currentCycleSkipped: false,
   sessionEnded: false,
-  comments: [],
+  sessionEndedAt: null,
+  sessionSaved: false,
 };
 
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
@@ -43,6 +47,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       return {
         ...initialState,
         lastReadBook: action.book,
+        sessionId: action.sessionId,
         isRunning: true,
       };
     case "tick":
@@ -98,9 +103,14 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
         currentCycleSkipped: false,
       };
     case "end":
-      return { ...state, isRunning: false, sessionEnded: true };
-    case "addComment":
-      return { ...state, comments: [...state.comments, action.comment] };
+      return {
+        ...state,
+        isRunning: false,
+        sessionEnded: true,
+        sessionEndedAt: action.endedAt,
+      };
+    case "saved":
+      return { ...state, sessionSaved: true };
   }
 }
 
@@ -111,7 +121,7 @@ type ReadingContextValue = SessionState & {
   togglePause: () => void;
   startNewCycle: () => void;
   endSession: () => void;
-  addSessionComment: (comment: string) => void;
+  markSessionSaved: () => void;
 };
 
 const ReadingContext = createContext<ReadingContextValue | undefined>(undefined);
@@ -119,16 +129,24 @@ const ReadingContext = createContext<ReadingContextValue | undefined>(undefined)
 export function ReadingProvider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(sessionReducer, initialState);
 
-  const startReading = useCallback((book: Book) => dispatch({ type: "start", book }), []);
+  const startReading = useCallback(
+    (book: Book) =>
+      dispatch({
+        type: "start",
+        book,
+        sessionId: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+      }),
+    [],
+  );
   const tick = useCallback(() => dispatch({ type: "tick" }), []);
   const skipToRest = useCallback(() => dispatch({ type: "skipToRest" }), []);
   const togglePause = useCallback(() => dispatch({ type: "togglePause" }), []);
   const startNewCycle = useCallback(() => dispatch({ type: "newCycle" }), []);
-  const endSession = useCallback(() => dispatch({ type: "end" }), []);
-  const addSessionComment = useCallback(
-    (comment: string) => dispatch({ type: "addComment", comment }),
+  const endSession = useCallback(
+    () => dispatch({ type: "end", endedAt: new Date().toISOString() }),
     [],
   );
+  const markSessionSaved = useCallback(() => dispatch({ type: "saved" }), []);
 
   return (
     <ReadingContext.Provider
@@ -140,7 +158,7 @@ export function ReadingProvider({ children }: PropsWithChildren) {
         togglePause,
         startNewCycle,
         endSession,
-        addSessionComment,
+        markSessionSaved,
       }}
     >
       {children}

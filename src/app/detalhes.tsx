@@ -1,3 +1,10 @@
+import { GlobalText } from "@/components/GlobalText";
+import { Screen } from "@/components/Screen";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { useReading } from "@/contexts/ReadingContext";
+import type { Book } from "@/types/Book";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,13 +14,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { GlobalText } from "@/components/GlobalText";
-import { Screen } from "@/components/Screen";
-import type { Book } from "@/types/Book";
-import { useFavorites } from "@/contexts/FavoritesContext";
-import { useReading } from "@/contexts/ReadingContext";
 
 type WorkResponse = {
   description?: string | { value?: string };
@@ -84,9 +84,9 @@ export default function Detalhes() {
   }, [bookKey, requestId]);
 
   function addComment() {
-    const text = comment.trim();
-    if (!text) return;
-    setComments((current) => [text, ...current]);
+    const value = comment.trim();
+    if (!value) return;
+    setComments((current) => [...current, value]);
     setComment("");
   }
 
@@ -182,7 +182,7 @@ export default function Detalhes() {
           <TextInput
             value={comment}
             onChangeText={setComment}
-            placeholder="Compartilhe sua impressão sobre o livro"
+            placeholder="Escreva um comentário sobre este livro"
             placeholderTextColor="#8DA59A"
             multiline
             textAlignVertical="top"
@@ -190,11 +190,10 @@ export default function Detalhes() {
           />
           <Pressable
             accessibilityRole="button"
-            disabled={!comment.trim()}
             onPress={addComment}
-            style={[styles.commentButton, !comment.trim() && styles.disabledButton]}
+            style={styles.commentButton}
           >
-            <GlobalText style={styles.commentButtonText}>Registrar comentário</GlobalText>
+            <GlobalText style={styles.commentButtonText}>{"Adicionar comentário"}</GlobalText>
           </Pressable>
           {comments.map((item, index) => (
             <View key={`${index}-${item}`} style={styles.commentCard}>
@@ -286,13 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#28564D",
   },
-  disabledButton: { opacity: 0.5 },
   commentButtonText: { fontWeight: "700", fontSize: 14 },
-  commentCard: {
-    marginTop: 10,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: "#17413C",
-  },
-  commentText: { color: "#D5DED6", fontSize: 14, lineHeight: 22 },
+  commentCard: { marginTop: 10, padding: 12, borderRadius: 10, backgroundColor: "#17413C" },
+  commentText: { color: "#D5DED6", fontSize: 14, lineHeight: 21 },
 });

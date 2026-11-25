@@ -66,9 +66,7 @@ export default function Catalogo() {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <View style={styles.menuButton}>
-                <DrawerToggleButton tintColor="#F5F0E6" />
-              </View>
+              <View style={styles.menuButton}><DrawerToggleButton tintColor="#F5F0E6" /></View>
               <View style={styles.titleContainer}>
                 <View style={styles.logo}>
                   <Image
@@ -182,6 +180,7 @@ const styles = StyleSheet.create({
   header: {
     gap: 15,
   },
+  menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: -12, marginLeft: -12 },
 
   loadingRow: {
     flexDirection: "row",
@@ -238,14 +237,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
-  },
-
-  menuButton: {
-    height: 44,
-    alignSelf: "flex-start",
-    justifyContent: "center",
-    marginTop: -12,
-    marginLeft: -12,
   },
 
   titleArea: {
