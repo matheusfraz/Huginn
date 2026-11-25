@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { PropsWithChildren } from "react";
 import type { Book } from "@/types/Book";
 
@@ -16,10 +17,53 @@ type FavoritesContextValue = {
 
 const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined);
 
+const FAVORITES_KEY = "@huginn/favorites";
+const READING_KEY = "@huginn/reading";
+const READ_KEY = "@huginn/read";
+
 export function FavoritesProvider({ children }: PropsWithChildren) {
   const [favorites, setFavorites] = useState<Book[]>([]);
   const [reading, setReading] = useState<Book[]>([]);
   const [read, setRead] = useState<Book[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadLists() {
+      try {
+        const savedFavorites = await AsyncStorage.getItem(FAVORITES_KEY);
+        const savedReading = await AsyncStorage.getItem(READING_KEY);
+        const savedRead = await AsyncStorage.getItem(READ_KEY);
+
+        if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+        if (savedReading) setReading(JSON.parse(savedReading));
+        if (savedRead) setRead(JSON.parse(savedRead));
+      } catch {
+        console.warn("Não foi possível carregar os livros salvos.");
+      } finally {
+        setLoaded(true);
+      }
+    }
+
+    loadLists();
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    }
+  }, [favorites, loaded]);
+
+  useEffect(() => {
+    if (loaded) {
+      AsyncStorage.setItem(READING_KEY, JSON.stringify(reading));
+    }
+  }, [reading, loaded]);
+
+  useEffect(() => {
+    if (loaded) {
+      AsyncStorage.setItem(READ_KEY, JSON.stringify(read));
+    }
+  }, [read, loaded]);
 
   const isFavorite = (bookKey: string) => favorites.some((book) => book.key === bookKey);
   const isReading = (bookKey: string) => reading.some((book) => book.key === bookKey);

@@ -1,22 +1,38 @@
 import { Stack } from "expo-router";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import { ReadingProvider } from "@/contexts/ReadingContext";
 import { ReadingHistoryProvider } from "@/contexts/ReadingHistoryContext";
 
 export default function RootLayout() {
   return (
-    <ReadingHistoryProvider>
-      <ReadingProvider>
-        <FavoritesProvider>
-          <Stack>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-            <Stack.Screen name="detalhes" options={{ headerShown: false }} />
-            <Stack.Screen name="leitura" options={{ headerShown: false }} />
-            <Stack.Screen name="historico-leitura" options={{ headerShown: false }} />
-          </Stack>
-        </FavoritesProvider>
-      </ReadingProvider>
-    </ReadingHistoryProvider>
+    <AuthProvider>
+      <ReadingHistoryProvider>
+        <ReadingProvider>
+          <FavoritesProvider>
+            <RootStack />
+          </FavoritesProvider>
+        </ReadingProvider>
+      </ReadingHistoryProvider>
+    </AuthProvider>
+  );
+}
+
+function RootStack() {
+  const { isLoggedIn } = useAuth();
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="login" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(drawer)" />
+        <Stack.Screen name="detalhes" />
+        <Stack.Screen name="leitura" />
+        <Stack.Screen name="historico-leitura" />
+      </Stack.Protected>
+    </Stack>
   );
 }

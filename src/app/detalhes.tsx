@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalText } from "@/components/GlobalText";
 import { Screen } from "@/components/Screen";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -43,7 +44,7 @@ export default function Detalhes() {
     cover_i: coverId ? Number(coverId) : undefined,
     first_publish_year: year ? Number(year) : undefined,
   };
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isFavorite, toggleFavorite, isReading, toggleReading } = useFavorites();
   const { startReading } = useReading();
   const favorite = isFavorite(bookKey);
 
@@ -53,6 +54,19 @@ export default function Detalhes() {
   const [requestId, setRequestId] = useState(0);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<string[]>([]);
+
+  const commentsKey = `@huginn/comments${bookKey}`;
+
+  useEffect(() => {
+    async function loadComments() {
+      const saved = await AsyncStorage.getItem(commentsKey);
+      if (saved) {
+        setComments(JSON.parse(saved));
+      }
+    }
+
+    loadComments();
+  }, [commentsKey]);
 
   useEffect(() => {
     let active = true;
@@ -83,11 +97,14 @@ export default function Detalhes() {
     };
   }, [bookKey, requestId]);
 
-  function addComment() {
+  async function addComment() {
     const value = comment.trim();
     if (!value) return;
-    setComments((current) => [...current, value]);
+
+    const newComments = [...comments, value];
+    setComments(newComments);
     setComment("");
+    await AsyncStorage.setItem(commentsKey, JSON.stringify(newComments));
   }
 
   return (
@@ -168,6 +185,9 @@ export default function Detalhes() {
         <Pressable
           accessibilityRole="button"
           onPress={() => {
+            if (!isReading(bookKey)) {
+              toggleReading(selectedBook);
+            }
             startReading(selectedBook);
             router.push("/leitura");
           }}

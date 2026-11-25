@@ -10,7 +10,7 @@ import {
 import { GlobalText } from "@/components/GlobalText";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { router } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 const authorizedLogin: Record<string, string> = {
   email: "123",
@@ -18,6 +18,8 @@ const authorizedLogin: Record<string, string> = {
 };
 
 export default function Login() {
+  const { login: signIn } = useAuth();
+
   const [login, setLogin] = useState<Record<string, string>>({
     email: "",
     password: "",
@@ -85,7 +87,7 @@ export default function Login() {
                 login.password === authorizedLogin.password
               ) {
                 setError(false);
-                router.replace("/inicio");
+                signIn();
               } else {
                 setError(true);
               }

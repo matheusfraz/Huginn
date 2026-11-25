@@ -1,7 +1,6 @@
 import {
   View,
   StyleSheet,
-  Image,
   Pressable,
   TextInput,
   FlatList,
@@ -14,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Book, SearchResponse } from "@/types/Book";
 import { BookCard } from "@/components/BookCard";
 import { BookCardSkeleton } from "@/components/BookCardSkeleton";
-import { DrawerToggleButton } from "expo-router/drawer";
+import { TopBar } from "@/components/TopBar";
 
 export default function Catalogo() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -66,14 +65,8 @@ export default function Catalogo() {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <View style={styles.menuButton}><DrawerToggleButton tintColor="#F5F0E6" /></View>
+              <TopBar />
               <View style={styles.titleContainer}>
-                <View style={styles.logo}>
-                  <Image
-                    source={require("@/assets/images/Huginn.png")}
-                    style={styles.logoImg}
-                  />
-                </View>
                 <View style={styles.titleArea}>
                   <GlobalText
                     style={{
@@ -180,7 +173,6 @@ const styles = StyleSheet.create({
   header: {
     gap: 15,
   },
-  menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: -12, marginLeft: -12 },
 
   loadingRow: {
     flexDirection: "row",
@@ -233,37 +225,16 @@ const styles = StyleSheet.create({
 
   titleContainer: {
     width: "100%",
-    height: 110,
+    height: 90,
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
   },
 
   titleArea: {
-    width: "60%",
+    flex: 1,
     height: "100%",
     justifyContent: "center",
-  },
-
-  logo: {
-    width: "30%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  logoImg: {
-    height: 90,
-    width: 90,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: "#F5F0E6",
-    resizeMode: "contain",
-    shadowColor: "#ffffff",
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 10,
   },
 
   searchAreaContainer: {

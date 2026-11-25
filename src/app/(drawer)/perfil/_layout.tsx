@@ -1,24 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, StyleSheet, Image, Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
+import { Tabs, router } from "expo-router";
 import { Screen } from "@/components/Screen";
 import { GlobalText } from "@/components/GlobalText";
-import { BookCard } from "@/components/BookCard";
+import { TopBar } from "@/components/TopBar";
 import { useFavorites } from "@/contexts/FavoritesContext";
-import { DrawerToggleButton } from "expo-router/drawer";
+import { useAuth } from "@/contexts/AuthContext";
 
-type Tab = "lendo" | "favoritos" | "lidos";
+const PHOTO_KEY = "@huginn/profile-photo";
 
-export default function Perfil() {
+export const unstable_settings = {
+  initialRouteName: "lendo",
+};
+
+export default function PerfilLayout() {
   const { favorites, reading, read } = useFavorites();
+  const { logout } = useAuth();
 
-  const [name, setName] = useState("Vitor Vidigal");
+  const [name, setName] = useState("Victor Vidigal");
   const [newName, setNewName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("lendo");
+
+  useEffect(() => {
+    async function loadPhoto() {
+      const savedPhoto = await AsyncStorage.getItem(PHOTO_KEY);
+      if (savedPhoto) {
+        setPhoto(savedPhoto);
+      }
+    }
+
+    loadPhoto();
+  }, []);
 
   async function choosePhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -29,7 +45,9 @@ export default function Perfil() {
     });
 
     if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      setPhoto(uri);
+      await AsyncStorage.setItem(PHOTO_KEY, uri);
     }
   }
 
@@ -45,58 +63,48 @@ export default function Perfil() {
     setIsEditing(false);
   }
 
-  let books = reading;
-  let title = "Livros que estou lendo";
-  let emptyText = "Você não está lendo nenhum livro no momento.";
-
-  if (tab === "favoritos") {
-    books = favorites;
-    title = "Meus favoritos";
-    emptyText = "Você ainda não favoritou nenhum livro.";
-  }
-
-  if (tab === "lidos") {
-    books = read;
-    title = "Livros que já li";
-    emptyText = "Você ainda não marcou nenhum livro como lido.";
-  }
-
   return (
-    <Screen scroll={true}>
-      <View style={styles.container}>
-        <View style={styles.menuButton}><DrawerToggleButton tintColor="#F5F0E6" /></View>
+    <Screen scroll={false}>
+      <View style={styles.header}>
+        <TopBar />
+
         <View style={styles.profileCard}>
           <Pressable onPress={choosePhoto} style={styles.photoButton}>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.photo} />
             ) : (
               <View style={[styles.photo, styles.noPhoto]}>
-                <Ionicons name="person-outline" size={52} color="#93A69F" />
+                <Ionicons name="person-outline" size={38} color="#93A69F" />
               </View>
             )}
             <View style={styles.cameraBadge}>
-              <Ionicons name="camera-outline" size={17} color="#103330" />
+              <Ionicons name="camera-outline" size={14} color="#103330" />
             </View>
           </Pressable>
 
-          {isEditing ? (
-            <View style={styles.editArea}>
-              <TextInput
-                style={styles.nameInput}
-                value={newName}
-                onChangeText={setNewName}
-                autoFocus
-              />
-              <Pressable onPress={saveName} style={styles.saveButton}>
-                <Ionicons name="checkmark" size={22} color="#103330" />
+          <View style={styles.info}>
+            {isEditing ? (
+              <View style={styles.editArea}>
+                <TextInput
+                  style={styles.nameInput}
+                  value={newName}
+                  onChangeText={setNewName}
+                  autoFocus
+                />
+                <Pressable onPress={saveName} style={styles.saveButton}>
+                  <Ionicons name="checkmark" size={20} color="#103330" />
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable onPress={startEditing} style={styles.nameArea}>
+                <GlobalText style={styles.name} numberOfLines={1}>
+                  {name}
+                </GlobalText>
+                <Ionicons name="pencil-outline" size={16} color="#A9B8B3" />
               </Pressable>
-            </View>
-          ) : (
-            <Pressable onPress={startEditing} style={styles.nameArea}>
-              <GlobalText style={styles.name}>{name}</GlobalText>
-              <Ionicons name="pencil-outline" size={18} color="#A9B8B3" />
-            </Pressable>
-          )}
+            )}
+            <GlobalText style={styles.subtitle}>Leitor do Huginn</GlobalText>
+          </View>
         </View>
 
         <Pressable
@@ -111,118 +119,87 @@ export default function Perfil() {
           <Ionicons name="chevron-forward" size={18} color="#AFC2B7" />
         </Pressable>
 
-        <View style={styles.tabs}>
-          <TabButton
-            label="Lendo"
-            count={reading.length}
-            icon="book-outline"
-            active={tab === "lendo"}
-            onPress={() => setTab("lendo")}
-          />
-          <TabButton
-            label="Favoritos"
-            count={favorites.length}
-            icon="heart-outline"
-            active={tab === "favoritos"}
-            onPress={() => setTab("favoritos")}
-          />
-          <TabButton
-            label="Lidos"
-            count={read.length}
-            icon="checkmark-circle-outline"
-            active={tab === "lidos"}
-            onPress={() => setTab("lidos")}
-          />
-        </View>
-
-        <GlobalText style={styles.sectionTitle}>{title}</GlobalText>
-
-        {books.length === 0 ? (
-          <View style={styles.emptyArea}>
-            <Ionicons name="library-outline" size={40} color="#93A69F" />
-            <GlobalText style={styles.emptyText}>{emptyText}</GlobalText>
-          </View>
-        ) : (
-          <View style={styles.bookList}>
-            {books.map((book) => (
-              <BookCard key={book.key} book={book} />
-            ))}
-          </View>
-        )}
+        <Pressable
+          accessibilityRole="button"
+          onPress={logout}
+          style={styles.logoutButton}
+        >
+          <Ionicons name="log-out-outline" size={18} color="#E58B80" />
+          <GlobalText style={styles.logoutText}>Sair da conta</GlobalText>
+        </Pressable>
       </View>
+
+      <Tabs
+        safeAreaInsets={{ top: 0, bottom: 0 }}
+        screenOptions={{
+          headerShown: false,
+          tabBarPosition: "top",
+          tabBarStyle: styles.tabBar,
+          tabBarItemStyle: styles.tabItem,
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarActiveBackgroundColor: "#F5F0E6",
+          tabBarActiveTintColor: "#103330",
+          tabBarInactiveTintColor: "#AFC2B7",
+          sceneStyle: { backgroundColor: "#103330" },
+        }}
+      >
+        <Tabs.Screen
+          name="lendo"
+          options={{
+            title: `Lendo (${reading.length})`,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name="book-outline" color={focused ? "#103330" : "#AFC2B7"} size={20} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="favoritos"
+          options={{
+            title: `Favoritos (${favorites.length})`,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name="heart-outline" color={focused ? "#103330" : "#AFC2B7"} size={20} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="lidos"
+          options={{
+            title: `Lidos (${read.length})`,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name="checkmark-circle-outline" color={focused ? "#103330" : "#AFC2B7"} size={20} />
+            ),
+          }}
+        />
+      </Tabs>
     </Screen>
   );
 }
 
-interface TabButtonProps {
-  label: string;
-  count: number;
-  icon: React.ComponentProps<typeof Ionicons>["name"];
-  active: boolean;
-  onPress: () => void;
-}
-
-function TabButton({ label, count, icon, active, onPress }: TabButtonProps) {
-  const color = active ? "#103330" : "#F5F0E6";
-
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.tabButton, active && styles.tabButtonActive]}
-    >
-      <Ionicons name={icon} size={20} color={color} />
-      <GlobalText style={[styles.tabCount, { color }]}>{count}</GlobalText>
-      <GlobalText style={[styles.tabLabel, { color }]}>{label}</GlobalText>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    gap: 20,
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+    gap: 16,
   },
-  menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: -12, marginLeft: -12 },
   profileCard: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
+    gap: 16,
+    padding: 16,
     backgroundColor: "#0a201f",
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#1f4642",
   },
-  historyButton: {
-    minHeight: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#1f4642",
-    backgroundColor: "#17413C",
-  },
-  historyIcon: {
-    width: 36,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 18,
-    backgroundColor: "#28564D",
-  },
-  historyLabel: { flex: 1, fontWeight: "600", fontSize: 14 },
   photoButton: {
-    width: 120,
-    height: 120,
-    marginBottom: 6,
+    width: 84,
+    height: 84,
   },
   photo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
     borderWidth: 3,
     borderColor: "#F5F0E6",
   },
@@ -233,16 +210,20 @@ const styles = StyleSheet.create({
   },
   cameraBadge: {
     position: "absolute",
-    right: 2,
-    bottom: 2,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    right: 0,
+    bottom: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: "#F5F0E6",
     borderWidth: 2,
     borderColor: "#0a201f",
     justifyContent: "center",
     alignItems: "center",
+  },
+  info: {
+    flex: 1,
+    gap: 4,
   },
   nameArea: {
     flexDirection: "row",
@@ -250,77 +231,95 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   name: {
+    flexShrink: 1,
     fontWeight: "600",
-    fontSize: 34,
+    fontSize: 26,
   },
-
+  subtitle: {
+    fontSize: 14,
+    color: "#A9B8B3",
+  },
   editArea: {
-    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
   },
-  
   nameInput: {
     flex: 1,
-    height: 48,
-    paddingHorizontal: 14,
+    height: 44,
+    paddingHorizontal: 12,
     borderWidth: 2,
     borderColor: "#F5F0E6",
     borderRadius: 12,
     backgroundColor: "#103330",
     color: "#F5F0E6",
-    
-    fontSize: 18,
+    fontSize: 16,
   },
   saveButton: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: 12,
     backgroundColor: "#F5F0E6",
     justifyContent: "center",
     alignItems: "center",
   },
-  tabs: {
+  historyButton: {
+    minHeight: 52,
     flexDirection: "row",
-    gap: 10,
-  },
-  tabButton: {
-    flex: 1,
     alignItems: "center",
-    gap: 2,
-    paddingVertical: 12,
-    borderRadius: 16,
+    gap: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#1f4642",
+    backgroundColor: "#17413C",
+  },
+  historyIcon: {
+    width: 34,
+    height: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 17,
+    backgroundColor: "#28564D",
+  },
+  historyLabel: {
+    flex: 1,
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: -6,
+    paddingVertical: 6,
+  },
+  logoutText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#E58B80",
+  },
+  tabBar: {
+    height: 64,
+    marginHorizontal: 24,
+    padding: 4,
     backgroundColor: "#0a201f",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderTopWidth: 1,
+    borderColor: "#1f4642",
+    elevation: 0,
+    shadowOpacity: 0,
   },
-  tabButtonActive: {
-    backgroundColor: "#F5F0E6",
-    borderColor: "#F5F0E6",
-  },
-  tabCount: {
-    fontWeight: "700",
-    fontSize: 20,
+  tabItem: {
+    marginHorizontal: 2,
+    paddingVertical: 4,
+    borderRadius: 14,
+    overflow: "hidden",
   },
   tabLabel: {
-    fontSize: 13,
-  },
-  sectionTitle: {
+    fontSize: 12,
     fontWeight: "600",
-    fontSize: 28,
-  },
-  emptyArea: {
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 30,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: "#A9B8B3",
-    textAlign: "center",
-  },
-  bookList: {
-    gap: 14,
   },
 });

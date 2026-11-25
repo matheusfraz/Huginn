@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalText } from "@/components/GlobalText";
 import { Screen } from "@/components/Screen";
 import { useReading } from "@/contexts/ReadingContext";
-import { DrawerToggleButton } from "expo-router/drawer";
+import { TopBar } from "@/components/TopBar";
 
 export default function Inicio() {
   const { lastReadBook } = useReading();
@@ -12,7 +12,7 @@ export default function Inicio() {
   return (
     <Screen scroll>
       <View style={styles.container}>
-        <View style={styles.menuButton}><DrawerToggleButton tintColor="#F5F0E6" /></View>
+        <TopBar />
         <View style={styles.heading}>
           <GlobalText style={styles.eyebrow}>SEU ESPAÇO DE LEITURA</GlobalText>
           <GlobalText style={styles.title}>Início</GlobalText>
@@ -22,8 +22,9 @@ export default function Inicio() {
         </View>
 
         <View style={styles.sectionHeading}>
-          <GlobalText style={styles.sectionTitle}>Continue de onde parou</GlobalText>
-          <Ionicons name="leaf-outline" size={20} color="#D9B8A4" />
+          <GlobalText style={styles.sectionTitle}>
+            Continue de onde parou
+          </GlobalText>
         </View>
 
         {lastReadBook ? (
@@ -54,10 +55,15 @@ export default function Inicio() {
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push("/leitura")}
-              style={({ pressed }) => [styles.resumeButton, pressed && styles.pressed]}
+              style={({ pressed }) => [
+                styles.resumeButton,
+                pressed && styles.pressed,
+              ]}
             >
               <Ionicons name="play" size={18} color="#103330" />
-              <GlobalText style={styles.resumeLabel}>Retomar leitura</GlobalText>
+              <GlobalText style={styles.resumeLabel}>
+                Retomar leitura
+              </GlobalText>
             </Pressable>
           </View>
         ) : (
@@ -65,16 +71,23 @@ export default function Inicio() {
             <View style={styles.emptyIcon}>
               <Ionicons name="book-outline" size={30} color="#D9B8A4" />
             </View>
-            <GlobalText style={styles.emptyTitle}>Sua próxima leitura começa aqui</GlobalText>
+            <GlobalText style={styles.emptyTitle}>
+              Sua próxima leitura começa aqui
+            </GlobalText>
             <GlobalText style={styles.emptyText}>
               Quando iniciar um livro, você poderá voltar a ele por esta tela.
             </GlobalText>
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push("/catalogo")}
-              style={({ pressed }) => [styles.exploreButton, pressed && styles.pressed]}
+              style={({ pressed }) => [
+                styles.exploreButton,
+                pressed && styles.pressed,
+              ]}
             >
-              <GlobalText style={styles.exploreLabel}>Explorar catálogo</GlobalText>
+              <GlobalText style={styles.exploreLabel}>
+                Explorar catálogo
+              </GlobalText>
               <Ionicons name="arrow-forward" size={18} color="#F5F0E6" />
             </Pressable>
           </View>
@@ -83,9 +96,13 @@ export default function Inicio() {
         <View style={styles.quoteCard}>
           <Ionicons name="sparkles-outline" size={20} color="#D9B8A4" />
           <GlobalText style={styles.quote}>
-            “A leitura abre portas para mundos que ainda não conhecemos.”
+            “Ler é para a mente o que o exercício é para o corpo.” — Joseph
+            Addison
           </GlobalText>
-          <GlobalText style={styles.quoteCaption}>UM CAPÍTULO DE CADA VEZ</GlobalText>
+
+          <GlobalText style={styles.quoteCaption}>
+            UM CAPÍTULO DE CADA VEZ
+          </GlobalText>
         </View>
       </View>
     </Screen>
@@ -93,13 +110,22 @@ export default function Inicio() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingBottom: 36 },
-  menuButton: { height: 44, alignSelf: "flex-start", justifyContent: "center", marginTop: 4, marginLeft: -12 },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 36,
+  },
   heading: { marginTop: 14, marginBottom: 30 },
   eyebrow: { color: "#D9B8A4", fontSize: 11, letterSpacing: 1.5 },
   title: { fontWeight: "600", fontSize: 46, lineHeight: 54 },
   subtitle: { color: "#AFC2B7", fontSize: 15, marginTop: 2 },
-  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
+  sectionHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
   sectionTitle: { fontWeight: "700", fontSize: 17 },
   readingCard: {
     backgroundColor: "#17413C",
@@ -112,7 +138,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 14,
   },
-  cover: { width: 82, height: 122, borderRadius: 9, backgroundColor: "#28564D" },
+  cover: {
+    width: 82,
+    height: 122,
+    borderRadius: 9,
+    backgroundColor: "#28564D",
+  },
   coverPlaceholder: { alignItems: "center", justifyContent: "center" },
   bookInfo: { flex: 1, minWidth: 150, gap: 5 },
   cardEyebrow: { color: "#D9B8A4", fontSize: 10, letterSpacing: 1 },
@@ -148,7 +179,13 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   emptyTitle: { fontWeight: "700", fontSize: 16, textAlign: "center" },
-  emptyText: { color: "#AFC2B7", textAlign: "center", fontSize: 13, lineHeight: 21, marginTop: 7 },
+  emptyText: {
+    color: "#AFC2B7",
+    textAlign: "center",
+    fontSize: 13,
+    lineHeight: 21,
+    marginTop: 7,
+  },
   exploreButton: {
     minHeight: 46,
     alignSelf: "stretch",
