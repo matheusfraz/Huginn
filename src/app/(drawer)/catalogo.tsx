@@ -1,19 +1,19 @@
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
-import { Screen } from "@/components/Screen";
-import { GlobalText } from "@/components/GlobalText";
-import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import { Book, SearchResponse } from "@/types/Book";
 import { BookCard } from "@/components/BookCard";
 import { BookCardSkeleton } from "@/components/BookCardSkeleton";
+import { GlobalText } from "@/components/GlobalText";
+import { Screen } from "@/components/Screen";
 import { TopBar } from "@/components/TopBar";
+import { Book, SearchResponse } from "@/types/Book";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function Catalogo() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -65,7 +65,7 @@ export default function Catalogo() {
         <FlatList
           ListHeaderComponent={
             <View style={styles.header}>
-              <TopBar />
+              <TopBar image={true} />
               <View style={styles.titleContainer}>
                 <View style={styles.titleArea}>
                   <GlobalText

@@ -1,11 +1,13 @@
-import { View, Image, StyleSheet } from "react-native";
 import { DrawerToggleButton } from "expo-router/drawer";
+import { Image, StyleSheet, View } from "react-native";
 
-export function TopBar() {
+export function TopBar({image}: { image: boolean }) {
   return (
     <View style={styles.topBar}>
       <DrawerToggleButton tintColor="#F5F0E6" />
-      <Image source={require("@/assets/images/Huginn.png")} style={styles.logo} />
+      {image && (
+        <Image source={require("@/assets/images/Huginn.png")} style={styles.logo} />
+      )}
     </View>
   );
 }

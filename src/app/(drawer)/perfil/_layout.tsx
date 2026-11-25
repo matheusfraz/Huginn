@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, StyleSheet, Image, Pressable, TextInput } from "react-native";
+import { GlobalText } from "@/components/GlobalText";
+import { Screen } from "@/components/Screen";
+import { TopBar } from "@/components/TopBar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { Tabs, router } from "expo-router";
-import { Screen } from "@/components/Screen";
-import { GlobalText } from "@/components/GlobalText";
-import { TopBar } from "@/components/TopBar";
-import { useFavorites } from "@/contexts/FavoritesContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
 
 const PHOTO_KEY = "@huginn/profile-photo";
 
@@ -66,7 +66,7 @@ export default function PerfilLayout() {
   return (
     <Screen scroll={false}>
       <View style={styles.header}>
-        <TopBar />
+        <TopBar image={false} />
 
         <View style={styles.profileCard}>
           <Pressable onPress={choosePhoto} style={styles.photoButton}>

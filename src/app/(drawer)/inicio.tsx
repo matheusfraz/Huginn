@@ -1,10 +1,10 @@
-import { Image, Pressable, StyleSheet, View } from "react-native";
-import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { GlobalText } from "@/components/GlobalText";
 import { Screen } from "@/components/Screen";
-import { useReading } from "@/contexts/ReadingContext";
 import { TopBar } from "@/components/TopBar";
+import { useReading } from "@/contexts/ReadingContext";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 export default function Inicio() {
   const { lastReadBook } = useReading();
@@ -12,7 +12,7 @@ export default function Inicio() {
   return (
     <Screen scroll>
       <View style={styles.container}>
-        <TopBar />
+        <TopBar image={true} />
         <View style={styles.heading}>
           <GlobalText style={styles.eyebrow}>SEU ESPAÇO DE LEITURA</GlobalText>
           <GlobalText style={styles.title}>Início</GlobalText>
